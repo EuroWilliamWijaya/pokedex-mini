@@ -18,17 +18,18 @@ export function getArtworkUrl(id) {
   return `${ARTWORK_BASE_URL}/${id}.png`;
 }
 
+export const KNOWN_TYPES = [
+  "normal", "fire", "water", "electric", "grass", "ice",
+  "fighting", "poison", "ground", "flying", "psychic",
+  "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy",
+];
+
 /**
  * Map a Pokémon type name to its CSS variable.
  * Falls back to --type-normal if the type is unknown.
  */
 export function getTypeColor(typeName) {
-  const known = [
-    "normal", "fire", "water", "electric", "grass", "ice",
-    "fighting", "poison", "ground", "flying", "psychic",
-    "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy",
-  ];
-  const key = known.includes(typeName) ? typeName : "normal";
+  const key = KNOWN_TYPES.includes(typeName) ? typeName : "normal";
   return `var(--type-${key})`;
 }
 

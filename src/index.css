@@ -70,6 +70,7 @@
   --type-dark: #705746;
   --type-steel: #b7b7ce;
   --type-fairy: #d685ad;
+  --card-tint-opacity: 15%;
 }
 
 [data-theme="dark"] {
@@ -88,6 +89,7 @@
   --color-skeleton: #334155;
   --color-skeleton-shine: #475569;
   --color-overlay: rgba(255, 255, 255, 0.03);
+  --card-tint-opacity: 22%;
 }
 
 /* ======================================================
@@ -284,6 +286,7 @@ button {
 
 .search {
   margin-bottom: var(--space-xl);
+  position: relative;
 }
 
 .search-form {
@@ -331,6 +334,81 @@ button {
 
 .search-button:active {
   transform: scale(0.97);
+}
+
+/* ======================================================
+   SEARCH SUGGESTIONS
+   ====================================================== */
+
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--space-xs);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px var(--color-shadow-hover);
+  list-style: none;
+  padding: var(--space-xs);
+  z-index: 10;
+}
+
+.search-suggestion-item {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-transform: capitalize;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.search-suggestion-item.highlighted {
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
+}
+
+.search-suggestion-empty {
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text-muted);
+}
+
+/* ======================================================
+   TYPE FILTER
+   ====================================================== */
+
+.type-filter-container {
+  margin-bottom: var(--space-xl);
+}
+
+.type-filter-scroll {
+  display: flex;
+  gap: var(--space-sm);
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.type-filter-scroll::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.type-filter-btn {
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.type-filter-btn:hover:not(.active) {
+  background: var(--color-surface-hover);
 }
 
 /* ======================================================
@@ -401,7 +479,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--card-accent) 15%, var(--color-overlay));
+  background: color-mix(in srgb, var(--card-accent) var(--card-tint-opacity), var(--color-overlay));
   border-radius: var(--radius-md);
   overflow: hidden;
 }
