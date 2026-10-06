@@ -13,3 +13,17 @@ export function capitalize(name) {
 export function getSpriteUrl(id) {
   return `${SPRITE_BASE_URL}/${id}.png`;
 }
+
+/**
+ * Map a Pokémon type name to its CSS variable.
+ * Falls back to --type-normal if the type is unknown.
+ */
+export function getTypeColor(typeName) {
+  const known = [
+    "normal", "fire", "water", "electric", "grass", "ice",
+    "fighting", "poison", "ground", "flying", "psychic",
+    "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy",
+  ];
+  const key = known.includes(typeName) ? typeName : "normal";
+  return `var(--type-${key})`;
+}
