@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { API_BASE_URL } from "../config.js";
 import { capitalize } from "../utils.js";
+import FavoriteButton from "../components/FavoriteButton.jsx";
 
 function DetailPage() {
   const { name } = useParams();
@@ -59,7 +60,10 @@ function DetailPage() {
         width={200}
         height={200}
       />
-      <h2>{capitalize(pokemon.name)}</h2>
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "var(--space-md)" }}>
+        <h2 style={{ margin: 0 }}>{capitalize(pokemon.name)}</h2>
+        <FavoriteButton name={pokemon.name} />
+      </div>
       <p className="pokemon-types">
         {pokemon.types.map((t) => t.type.name).join(", ")}
       </p>

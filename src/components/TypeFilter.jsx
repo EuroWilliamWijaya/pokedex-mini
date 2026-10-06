@@ -1,9 +1,16 @@
 import { KNOWN_TYPES, getTypeColor } from "../utils.js";
 
-function TypeFilter({ activeType, onTypeSelect }) {
+function TypeFilter({ activeType, onTypeSelect, showFavorites, onToggleFavorites, favoritesCount }) {
   return (
     <div className="type-filter-container">
       <div className="type-filter-scroll">
+        <button
+          className={`type-filter-btn fav-toggle ${showFavorites ? "active" : ""}`}
+          onClick={onToggleFavorites}
+          style={showFavorites ? { backgroundColor: "var(--color-primary)", color: "white", borderColor: "var(--color-primary)" } : {}}
+        >
+          Favorites {favoritesCount > 0 && <span className="fav-badge">{favoritesCount}</span>}
+        </button>
         <button
           className={`type-filter-btn ${activeType === "all" ? "active" : ""}`}
           onClick={() => onTypeSelect("all")}

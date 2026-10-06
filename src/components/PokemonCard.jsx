@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getIdFromUrl, getArtworkUrl, capitalize, fetchPokemonDetails, getTypeColor } from "../utils.js";
 import TypeBadge from "./TypeBadge.jsx";
+import FavoriteButton from "./FavoriteButton.jsx";
 
 function PokemonCard({ name, url }) {
   const id = getIdFromUrl(url);
@@ -28,7 +29,7 @@ function PokemonCard({ name, url }) {
   const accentColor = primaryType ? getTypeColor(primaryType) : "var(--color-border)";
 
   return (
-    <li className="pokemon-list-item">
+    <li className="pokemon-list-item" style={{ position: "relative" }}>
       <Link
         to={`/pokemon/${name}`}
         className="pokemon-card"
@@ -54,6 +55,9 @@ function PokemonCard({ name, url }) {
           </div>
         )}
       </Link>
+      <div className="pokemon-card-favorite">
+        <FavoriteButton name={name} />
+      </div>
     </li>
   );
 }

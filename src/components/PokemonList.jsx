@@ -4,6 +4,7 @@ import { cachedFetch } from "../utils.js";
 import PokemonCard from "./PokemonCard.jsx";
 import SkeletonCard from "./SkeletonCard.jsx";
 import TypeFilter from "./TypeFilter.jsx";
+import { useFavorites } from "../hooks/useFavorites.js";
 
 function PokemonList() {
   const [pokemons, setPokemons] = useState([]);
@@ -12,7 +13,10 @@ function PokemonList() {
   const [error, setError] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [activeType, setActiveType] = useState("all");
-  const [filteredListCache, setFilteredListCache] = useState(null); // Stores the full unpaginated list for a specific type
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [filteredListCache, setFilteredListCache] = useState(null); // Stores the full unpaginated list
+
+  const { favorites } = useFavorites();
 
   useEffect(() => {
     let isCurrent = true;
@@ -22,7 +26,24 @@ function PokemonList() {
       setError(null);
 
       try {
-        if (activeType === "all") {
+        if (showFavorites) {
+          let baseList = [];
+          if (activeType === "all") {
+            // Need the full list to get URLs for favorites
+            const data = await cachedFetch(`${API_BASE_URL}/pokemon?limit=2000`);
+            baseList = data.results;
+          } else {
+            const data = await cachedFetch(`${API_BASE_URL}/type/${activeType}`);
+            baseList = data.pokemon.map((p) => p.pokemon);
+          }
+          
+          const favList = baseList.filter(p => favorites.includes(p.name));
+          if (isCurrent) {
+            setFilteredListCache(favList);
+            setTotalCount(favList.length);
+            setPokemons(favList.slice(0, PAGE_SIZE));
+          }
+        } else if (activeType === "all") {
           setFilteredListCache(null);
           const data = await cachedFetch(
             `${API_BASE_URL}/pokemon?limit=${PAGE_SIZE}&offset=0`
@@ -35,7 +56,6 @@ function PokemonList() {
           // Fetch all pokemon of the active type
           const data = await cachedFetch(`${API_BASE_URL}/type/${activeType}`);
           if (isCurrent) {
-            // Transform the data format: { pokemon: { name, url } } -> { name, url }
             const fullList = data.pokemon.map((p) => p.pokemon);
             setFilteredListCache(fullList);
             setTotalCount(fullList.length);
@@ -53,21 +73,21 @@ function PokemonList() {
     return () => {
       isCurrent = false;
     };
-  }, [activeType]);
+  }, [activeType, showFavorites, favorites]);
 
   async function handleLoadMore() {
     setIsLoadingMore(true);
     setError(null);
 
     try {
-      if (activeType === "all") {
+      if (!showFavorites && activeType === "all") {
         const data = await cachedFetch(
           `${API_BASE_URL}/pokemon?limit=${PAGE_SIZE}&offset=${pokemons.length}`
         );
         setTotalCount(data.count);
         setPokemons((prev) => [...prev, ...data.results]);
       } else {
-        // We already have the full list in memory for the active type
+        // We already have the full list in memory for the active type/favorites
         const nextBatch = filteredListCache.slice(
           pokemons.length,
           pokemons.length + PAGE_SIZE
@@ -82,13 +102,18 @@ function PokemonList() {
   }
 
   function handleRetry() {
-    // Just trigger a re-render to re-run the effect
     setActiveType((prev) => prev); 
   }
 
   return (
     <>
-      <TypeFilter activeType={activeType} onTypeSelect={setActiveType} />
+      <TypeFilter 
+        activeType={activeType} 
+        onTypeSelect={setActiveType}
+        showFavorites={showFavorites}
+        onToggleFavorites={() => setShowFavorites(!showFavorites)}
+        favoritesCount={favorites.length}
+      />
 
       {isLoading ? (
         <ul className="pokemon-list" aria-label="Loading Pokémon">
@@ -131,7 +156,7 @@ function PokemonList() {
           
           {!isLoading && !error && pokemons.length === 0 && (
             <div className="status">
-              <p>No Pokémon found for this type.</p>
+              <p>No Pokémon found.</p>
             </div>
           )}
         </>
